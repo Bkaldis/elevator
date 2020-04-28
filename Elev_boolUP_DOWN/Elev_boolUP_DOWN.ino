@@ -45,15 +45,15 @@ void loop() {
   // put your main code here, to run repeatedly:
 
 
-  print();//our print function prints out all variables
+  //print();//our print function prints out all variables
 
 
-  simINS();//simulated inputs
-  //hardIns();//hardware inputs
+  //simINS();//simulated inputs
+  hardINS();//hardware inputs
 
 
-  simDIR();//simulated motor driver
-  //hardDIR();//hardware motor driver
+  //dist = simDIR();//simulated motor driver
+  dist = hardDIR();//hardware motor driver
 }
 
 
@@ -97,10 +97,11 @@ int simDIR() {
   Serial.print("  after dist: ");//print function variables
   Serial.print(dist);
   Serial.print("  ");
+  return dist;
 }
 
 
-int hardDIR(int dist) {
+int hardDIR() {
   Serial.print("  ");//function prints
   Serial.print(dist);
   Serial.print("  ");
@@ -128,49 +129,49 @@ int hardDIR(int dist) {
     digitalWrite(DIRU, LOW);
     digitalWrite(DIRD, HIGH);
   }
-
+  return dist;
 }
 
 
 
 int nextTarget() {
   target = -1;
-  while (target = -1) {
-    Serial.print("IN NEXT TARGET FUNCTION!!!  ");
-    Serial.print("old target: ");
-    Serial.print(target);
-    //int count = floor(dist/15);
 
-    int count = -1;
-    for (int i = 1; i < 4; i++) { //do this 4 times
-      if ((dist >= FLn[i - 1]) and (dist < FLn[i])) { //is dist between FLn[i-1] and FLn[i]
-        count = count + 1;
-      }
-    }
+  Serial.print("IN NEXT TARGET FUNCTION!!!  ");
+  Serial.print("old target: ");
+  Serial.print(target);
+  //int count = floor(dist/15);
 
-    if (oned == true) { //we want to look up for our next target
-      Serial.print(" oned is true ");
-      while (targets[count] == 0) {
-        Serial.print("LOOKING UP!!  ");
-        count = count + 1;
-        target = count;
-      }
-      oned = false; //Change direction
-    }
-    else if (oned == false) { //we want to look down for our next target
-      Serial.print(" oned is false ");
-      while (targets[count] == 0) {
-        Serial.print("LOOKING DOWN!!  ");
-        count = count - 1;
-        target = count;
-      }
-      oned = true; //Change direction
-    }
-    else {
-      Serial.print("IDK WHERE TO LOOK!!  ");
-      target = 0;
+  int count = -1;
+  for (int i = 1; i < 4; i++) { //do this 4 times
+    if ((dist >= FLn[i - 1]) and (dist < FLn[i])) { //is dist between FLn[i-1] and FLn[i]
+      count = count + 1;
     }
   }
+
+  if (oned == true) { //we want to look up for our next target
+    Serial.print(" oned is true ");
+    while (targets[count] == 0) {
+      Serial.print("LOOKING UP!!  ");
+      count = count + 1;
+      target = count;
+    }
+    oned = false; //Change direction
+  }
+  else if (oned == false) { //we want to look down for our next target
+    Serial.print(" oned is false ");
+    while (targets[count] == 0) {
+      Serial.print("LOOKING DOWN!!  ");
+      count = count - 1;
+      target = count;
+    }
+    oned = true; //Change direction
+  }
+  else {
+    Serial.print("IDK WHERE TO LOOK!!  ");
+    target = 0;
+  }
+
   Serial.print("new target: ");
   Serial.print(target);
   return target;
@@ -178,9 +179,10 @@ int nextTarget() {
 
 int hardINS() {
   dist = sr04.Distance();
+  
   //get distance from ultrasonic sensor
 
-  push(floor(analogRead(Bselect) / 5));
+  push(round(analogRead(Bselect) / 5));
   //read analog pin 5V, 5 resistor voltade divider w/ button at each node
   //send to targets[] by push()
 }
